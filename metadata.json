@@ -1,0 +1,6 @@
+{
+  "name": "Accounting Software",
+  "description": "A comprehensive accounting web application with debit/credit entries, general ledger, balance sheet, profit and loss statements, and a responsive login system with actual integrated email 2-step verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
