@@ -40,6 +40,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
   const [emailSentReal, setEmailSentReal] = useState(false);
   const [isSimulated, setIsSimulated] = useState(false);
   const [isLoadingOtp, setIsLoadingOtp] = useState(false);
+  const [otpToken, setOtpToken] = useState('');
 
   // SMTP client configurations stored locally inside browser's local sandbox
   const [showSmtpSettings, setShowSmtpSettings] = useState(false);
@@ -110,6 +111,9 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         setIsSimulated(!!data.simulated);
         setSimulatedCode(data.code || '');
         setOtpCode(''); // Keep entirely blank so the user must type the code!
+        if (data.token) {
+          setOtpToken(data.token);
+        }
         
         if (data.emailSent) {
           setSuccessMessage(`A real single-use verification code has been dispatched to ${targetEmail}. Please check your email inbox!`);
@@ -231,7 +235,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: targetEmail, code: otpCode }),
+        body: JSON.stringify({ email: targetEmail, code: otpCode, token: otpToken }),
       });
       const data = await resp.json();
       
