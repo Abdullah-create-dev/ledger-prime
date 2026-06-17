@@ -139,8 +139,9 @@ app.post('/api/send-otp', async (req, res) => {
       },
     });
 
+    const defaultFrom = smtpUser ? `"LedgerPrime HQ Security" <${smtpUser}>` : `"LedgerPrime Security" <no-reply@ledgerprime.com>`;
     const mailOptions = {
-      from: process.env.SMTP_FROM || customSmtp?.from || `"LedgerPrime Security" <no-reply@ledgerprime.com>`,
+      from: process.env.SMTP_FROM || customSmtp?.from || defaultFrom,
       to: emailLower,
       subject: '🔐 Secure 2-Step Verification - LedgerPrime HQ',
       html: `
