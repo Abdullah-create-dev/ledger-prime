@@ -403,29 +403,18 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
                 </p>
               </div>
 
-              {/* QR Code Graphic Generator (Simulated beautifully) */}
-              <div className="p-4 bg-[#0F0F10] rounded-xl border border-[#27272A] flex flex-col items-center gap-3">
-                <div className="relative w-36 h-36 bg-[#161618] p-2 rounded-lg border border-[#27272A] shadow-xs flex items-center justify-center overflow-hidden">
-                  {/* Visual mockup of a QR Code using styled grid of dots */}
-                  <div className="grid grid-cols-6 gap-0.5 w-full h-full opacity-90">
-                    {[1,0,1,1,0,1, 1,1,0,0,1,1, 0,0,1,1,0,0, 1,0,0,1,0,1, 1,1,0,1,1,0, 0,1,1,0,0,1].map((val, idx) => (
-                      <div 
-                        key={idx} 
-                        className={`rounded-xs ${val === 1 ? 'bg-white' : 'bg-transparent'} ${
-                          idx === 0 || idx === 5 || idx === 30 || idx === 35 ? 'border mr-0.5 border-white' : ''
-                        }`} 
-                      />
-                    ))}
-                  </div>
-                  {/* Subtle key design in core */}
-                  <div className="absolute inset-0 m-auto w-10 h-10 bg-[#161618] border border-[#27272A] rounded-full flex items-center justify-center shadow-md">
-                    <Key className="w-5 h-5 text-blue-500" />
+              {/* Dispatch Security Graphic (Beautiful premium mail layout) */}
+              <div className="p-6 bg-[#0F0F10] rounded-xl border border-[#27272A] flex flex-col items-center gap-3 text-center">
+                <div className="relative w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20 shadow-md">
+                  <Mail className="w-8 h-8 text-blue-400 shrink-0" />
+                  <div className="absolute -top-1 -right-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-full p-1 text-[9px] font-bold">
+                    <CheckCircle className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-[10px] text-[#71717A]">Scan QR via Google Authenticator or Duo App</p>
-                  <p className="text-[12px] font-mono select-all font-semibold tracking-widest text-[#E4E4E7] bg-[#161618] border border-[#27272A] rounded-md px-2 py-0.5 mt-1.5 inline-block cursor-pointer">
-                    {mfaSecret}
+                <div>
+                  <p className="text-xs font-bold text-white">Enroll Secure Ledger Access</p>
+                  <p className="text-[11px] text-[#71717A] max-w-xs mt-1">
+                    To authorize your new ledger profile, verify the challenge code sent directly to your email inbox.
                   </p>
                 </div>
               </div>
