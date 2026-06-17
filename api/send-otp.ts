@@ -75,8 +75,17 @@ export default async function handler(req: any, res: any) {
   const smtpPass = (customSmtp && customSmtp.pass) || process.env.SMTP_PASS;
 
   if (!hasSmtpConfig) {
-    return res.status(400).json({
-      error: `SMTP Service is currently unconfigured. Because you are using AI Studio Playground mode, you can expand the "Configure SMTP Service" tool at the bottom of the OTP panel to specify your own real email sending credentials (like Gmail App Passwords) directly in the UI! Stored locally in your browser only.`
+    console.log(`[LEDGERPRIME VERCEL SECURE] SMTP credentials missing, fallback to 2FA simulation mode.`);
+    const simulatedCode = '123456';
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+    const token = createStatelessToken(emailLower, simulatedCode, expiresAt);
+    return res.json({
+      success: true,
+      emailSent: false,
+      simulated: true,
+      code: simulatedCode,
+      token,
+      message: 'Transmitter offline (SMTP unconfigured). A simulation PIN "123456" has been approved for your ledger profile.'
     });
   }
 
