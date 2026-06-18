@@ -154,13 +154,13 @@ app.post('/api/send-otp', async (req, res) => {
       },
     });
 
-    const defaultFrom = smtpUser ? `"LedgerPrime HQ Security" <${smtpUser}>` : `"LedgerPrime Security" <no-reply@ledgerprime.com>`;
+    const defaultFrom = smtpUser ? `"LedgerPrime" <${smtpUser}>` : `"LedgerPrime" <no-reply@ledgerprime.com>`;
     let rawFrom = process.env.SMTP_FROM || customSmtp?.from || defaultFrom;
     
     // Parse and rewrite From to prevent strict SMTP providers (like Gmail) from blocking or filtering the mail
     let finalFrom = rawFrom;
     if (smtpUser) {
-      let displayName = "LedgerPrime Security";
+      let displayName = "LedgerPrime";
       if (rawFrom.includes('<')) {
         const parts = rawFrom.split('<');
         const namePart = parts[0].replace(/"/g, '').trim();
@@ -176,7 +176,8 @@ app.post('/api/send-otp', async (req, res) => {
     const mailOptions = {
       from: finalFrom,
       to: emailLower,
-      subject: '🔐 Secure 2-Step Verification - LedgerPrime HQ',
+      subject: `LedgerPrime Verification Code: ${code}`,
+      text: `Your LedgerPrime HQ 2-Step Verification Code is: ${code}\n\nThis code is valid for 10 minutes. If you did not request this code, you can safely ignore this email.`,
       html: `
         <div style="font-family: 'Inter', system-ui, sans-serif; background-color: #0F0F10; color: #E4E4E7; padding: 40px 20px; border-radius: 12px; max-width: 500px; margin: 0 auto; border: 1px solid #27272A;">
           <div style="text-align: center; margin-bottom: 30px;">
@@ -193,7 +194,7 @@ app.post('/api/send-otp', async (req, res) => {
           </div>
           
           <div style="border-top: 1px solid #27272A; padding-top: 20px; text-align: center; font-size: 10px; color: #71717A;">
-            <span>Official ledger encryption notice. Transmission secure.</span>
+            <span>Official ledger notice. Transmission secure.</span>
           </div>
         </div>
       `,
