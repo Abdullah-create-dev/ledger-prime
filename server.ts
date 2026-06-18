@@ -111,8 +111,23 @@ app.post('/api/send-otp', async (req, res) => {
   const smtpPass = (customSmtp && customSmtp.pass) || process.env.SMTP_PASS;
 
   if (!hasSmtpConfig) {
-    return res.status(400).json({
-      error: `SMTP Service is currently unconfigured. Because you are using AI Studio Playground mode, you can expand the "Configure SMTP Service" tool at the bottom of the OTP panel to specify your own real email sending credentials (like Gmail App Passwords) directly in the UI! Stored locally in your browser only.`
+    console.log(`[LEDGERPRIME SECURE] SMTP credentials missing, fallback to 2FA simulation mode.`);
+    const simulatedCode = '123456';
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+    
+    otpStore[emailLower] = {
+      code: simulatedCode,
+      expiresAt,
+    };
+
+    const token = createStatelessToken(emailLower, simulatedCode, expiresAt);
+    return res.json({
+      success: true,
+      emailSent: false,
+      simulated: true,
+      code: simulatedCode,
+      token,
+      message: 'Transmitter offline (SMTP unconfigured). A simulation PIN "123456" has been approved for your ledger profile.'
     });
   }
 
@@ -140,8 +155,26 @@ app.post('/api/send-otp', async (req, res) => {
     });
 
     const defaultFrom = smtpUser ? `"LedgerPrime HQ Security" <${smtpUser}>` : `"LedgerPrime Security" <no-reply@ledgerprime.com>`;
+    let rawFrom = process.env.SMTP_FROM || customSmtp?.from || defaultFrom;
+    
+    // Parse and rewrite From to prevent strict SMTP providers (like Gmail) from blocking or filtering the mail
+    let finalFrom = rawFrom;
+    if (smtpUser) {
+      let displayName = "LedgerPrime Security";
+      if (rawFrom.includes('<')) {
+        const parts = rawFrom.split('<');
+        const namePart = parts[0].replace(/"/g, '').trim();
+        if (namePart) {
+          displayName = namePart;
+        }
+      } else if (!rawFrom.includes('@')) {
+        displayName = rawFrom.replace(/"/g, '').trim();
+      }
+      finalFrom = `"${displayName}" <${smtpUser}>`;
+    }
+
     const mailOptions = {
-      from: process.env.SMTP_FROM || customSmtp?.from || defaultFrom,
+      from: finalFrom,
       to: emailLower,
       subject: '🔐 Secure 2-Step Verification - LedgerPrime HQ',
       html: `

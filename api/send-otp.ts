@@ -108,8 +108,26 @@ export default async function handler(req: any, res: any) {
     });
 
     const defaultFrom = smtpUser ? `"LedgerPrime HQ Security" <${smtpUser}>` : `"LedgerPrime Security" <no-reply@ledgerprime.com>`;
+    let rawFrom = process.env.SMTP_FROM || customSmtp?.from || defaultFrom;
+    
+    // Parse and rewrite From to prevent strict SMTP providers (like Gmail) from blocking or filtering the mail
+    let finalFrom = rawFrom;
+    if (smtpUser) {
+      let displayName = "LedgerPrime Security";
+      if (rawFrom.includes('<')) {
+        const parts = rawFrom.split('<');
+        const namePart = parts[0].replace(/"/g, '').trim();
+        if (namePart) {
+          displayName = namePart;
+        }
+      } else if (!rawFrom.includes('@')) {
+        displayName = rawFrom.replace(/"/g, '').trim();
+      }
+      finalFrom = `"${displayName}" <${smtpUser}>`;
+    }
+
     const mailOptions = {
-      from: process.env.SMTP_FROM || customSmtp?.from || defaultFrom,
+      from: finalFrom,
       to: emailLower,
       subject: '🔐 Secure 2-Step Verification - LedgerPrime HQ',
       html: `
